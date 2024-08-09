@@ -4,13 +4,14 @@ import "./App.css";
 
 function App() {
   const imagePathDir = "atode kaeru";
-  const imagePathList = [
-    imagePathDir + "image-0012-1.jpg",
-    imagePathDir + "image-0012-2.jpg",
-    imagePathDir + "image-0012-3.jpg",
-    imagePathDir + "image-0012-4.jpg",
-  ];
+  const imagePathList = {
+    image1: imagePathDir + "image-0012-1.jpg",
+    image2: imagePathDir + "image-0012-2.jpg",
+    image3: imagePathDir + "image-0012-3.jpg",
+    image4: imagePathDir + "image-0012-4.jpg",
+  };
   const [selectedImage, setSelectedImage] = useState("image1");
+  const [characters, setCharacters] = useState([]);
   const [imageData, setImageData] = useState({
     image1: {
       characters: [
@@ -174,10 +175,42 @@ function App() {
     });
   };
 
+  const addCharacter = () => {
+    const newCharacter = {
+      character: "",
+      faceDirection: "",
+      position: "",
+      expression: "",
+      serif: "",
+      clothing: "",
+    };
+    setCharacters([...characters, newCharacter]);
+    setImageData((prevData) => ({
+      ...prevData,
+      [selectedImage]: {
+        ...prevData[selectedImage],
+        characters: [...prevData[selectedImage].characters, newCharacter], // ここを追加
+      },
+    }));
+  };
+
+  const removeCharacter = (index) => {
+    setCharacters(characters.filter((_, i) => i !== index));
+    setImageData((prevData) => ({
+      ...prevData,
+      [selectedImage]: {
+        ...prevData[selectedImage],
+        characters: prevData[selectedImage].characters.filter(
+          (_, i) => i !== index
+        ), // ここを追加
+      },
+    }));
+  };
+
   return (
     <div className="container">
       <header className="header">
-        <span>{selectedImage}</span>
+        <span>{imagePathList[selectedImage]}</span>
         <button onClick={() => setSelectedImage("prev")}>前の画像</button>
         <button onClick={() => setSelectedImage("next")}>次の画像</button>
         <button onClick={saveToCSV}>保存</button>
@@ -192,7 +225,7 @@ function App() {
               }`}
               onClick={() => setSelectedImage(`image${num}`)}
             >
-              <img src={imagePathList[num - 1]} alt={`image${num}`} />
+              <img src={imagePathList[`image${num}`]} alt={`image${num}`} />
               <button onClick={fetchData}>データ取得</button>
               {/* {selectedImage === `image${num}` ? (
                 <img src={imagePathList[num - 1]} alt={`image${num}`} />
@@ -256,8 +289,10 @@ function App() {
                 }
                 placeholder="服装"
               />
+              <button onClick={() => removeCharacter(index)}>削除</button>
             </div>
           ))}
+          <button onClick={addCharacter}>キャラクター追加</button>
           <div>
             <h4>状況</h4>
             <input
