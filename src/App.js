@@ -1,19 +1,46 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
+import Papa from "papaparse";
+
 import "./App.css";
 
 function App() {
-  const imagePathDir = "atode kaeru";
-  const imagePathList = {
-    image1: imagePathDir + "image-0012-1.jpg",
-    image2: imagePathDir + "image-0012-2.jpg",
-    image3: imagePathDir + "image-0012-3.jpg",
-    image4: imagePathDir + "image-0012-4.jpg",
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchCSV = async () => {
+      const response = await fetch("yuyu10_kanji.csv"); // CSVファイルのパス
+      const text = await response.text();
+      Papa.parse(text, {
+        header: true,
+        complete: (results) => {
+          setRows(results.data); // CSVのデータを状態に保存
+        },
+      });
+    };
+
+    fetchCSV();
+  }, []);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % (rows.length / 4)); // 次のインデックスに切り替え
   };
+
+  const imagePathDir =
+    "/yuyu10/pages_corrected/2_paint_out/0_koma/0_padding_shave/";
+  const currentKomaPaths = rows
+    .slice(currentIndex * 4, currentIndex * 4 + 4)
+    .map((row) => row.koma_path); // 現在の4つのkoma_pathを取得
+  const imagePathList = currentKomaPaths.reduce((acc, koma_path, index) => {
+    acc[`image${index + 1}`] = imagePathDir + koma_path.split("/").pop(); // imagePathDirとkoma_pathを結合
+    return acc;
+  }, {}); // imagePathListを更新
   const [selectedImage, setSelectedImage] = useState("image1");
   const [characters, setCharacters] = useState([]);
   const [imageData, setImageData] = useState({
     image1: {
+      komaPath: imagePathList.image1,
       characters: [
         {
           character: "",
@@ -22,6 +49,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -30,6 +58,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -38,11 +67,13 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
       ],
       sceneData: {scene: "", location: "", backgroundEffects: ""},
     },
     image2: {
+      komaPath: imagePathList.image2,
       characters: [
         {
           character: "",
@@ -51,6 +82,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -59,6 +91,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -67,11 +100,13 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
       ],
       sceneData: {scene: "", location: "", backgroundEffects: ""},
     },
     image3: {
+      komaPath: imagePathList.image3,
       characters: [
         {
           character: "",
@@ -80,6 +115,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -88,6 +124,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -96,11 +133,13 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
       ],
       sceneData: {scene: "", location: "", backgroundEffects: ""},
     },
     image4: {
+      komaPath: imagePathList.image4,
       characters: [
         {
           character: "",
@@ -109,6 +148,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -117,6 +157,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
         {
           character: "",
@@ -125,6 +166,7 @@ function App() {
           expression: "",
           serif: "",
           clothing: "",
+          isVisible: true,
         },
       ],
       sceneData: {scene: "", location: "", backgroundEffects: ""},
@@ -149,10 +191,36 @@ function App() {
       console.error("Error fetching data:", error);
     }
   };
-
+  const updateKomaPathInImageData = () => {
+    setImageData((prevData) => ({
+      ...prevData, // prevDataを展開
+      image1: {
+        // image1を新しいオブジェクトとして更新
+        ...prevData.image1,
+        komaPath: imagePathList.image1, // ここを修正
+      },
+      image2: {
+        // image1を新しいオブジェクトとして更新
+        ...prevData.image2,
+        komaPath: imagePathList.image2, // ここを修正
+      },
+      image3: {
+        // image1を新しいオブジェクトとして更新
+        ...prevData.image3,
+        komaPath: imagePathList.image3, // ここを修正
+      },
+      image4: {
+        // image1を新しいオブジェクトとして更新
+        ...prevData.image4,
+        komaPath: imagePathList.image4, // ここを修正
+      },
+    }));
+  };
   const saveToCSV = async () => {
     try {
+      updateKomaPathInImageData(); // ここを追加
       await axios.post("http://localhost:8000/api/save-csv", {
+        komaPath: imagePathList.image1,
         imageData,
         summary,
       });
@@ -183,6 +251,7 @@ function App() {
       expression: "",
       serif: "",
       clothing: "",
+      isVisible: true,
     };
     setCharacters([...characters, newCharacter]);
     setImageData((prevData) => ({
@@ -207,13 +276,31 @@ function App() {
     }));
   };
 
+  const [isBlurred, setIsBlurred] = useState(false);
+
+  const toggleBlur = () => {
+    setIsBlurred(!isBlurred); // ブラー状態を切り替え
+  };
   return (
     <div className="container">
       <header className="header">
-        <span>{imagePathList[selectedImage]}</span>
+        <span>{imagePathList[selectedImage]?.split("/").pop()}</span>
         <button onClick={() => setSelectedImage("prev")}>前の画像</button>
         <button onClick={() => setSelectedImage("next")}>次の画像</button>
         <button onClick={saveToCSV}>保存</button>
+        <button
+          onClick={() =>
+            setCurrentIndex(
+              (prevIndex) =>
+                (prevIndex - 1 + rows.length / 4) % (rows.length / 4)
+            )
+          }
+          disabled={currentIndex === 0}
+        >
+          前の4コマ({currentIndex - 1})
+        </button>{" "}
+        <button onClick={handleNext}>次の4コマ({currentIndex + 1})</button>
+        <button onClick={toggleBlur}>ブラーを切り替え</button>
       </header>
       <div className="main-content">
         <div className="image-selector">
@@ -225,7 +312,11 @@ function App() {
               }`}
               onClick={() => setSelectedImage(`image${num}`)}
             >
-              <img src={imagePathList[`image${num}`]} alt={`image${num}`} />
+              <img
+                src={imagePathList[`image${num}`]}
+                alt={`image${num}`}
+                className={isBlurred ? "blur" : ""}
+              />
               <button onClick={fetchData}>データ取得</button>
               {/* {selectedImage === `image${num}` ? (
                 <img src={imagePathList[num - 1]} alt={`image${num}`} />
@@ -289,6 +380,17 @@ function App() {
                 }
                 placeholder="服装"
               />
+              <label style={{display: "flex"}}>
+                画面内にいる
+                <input
+                  name="isVisible"
+                  type="checkbox" // チェックボックスを追加
+                  checked={character.isVisible}
+                  onChange={(e) =>
+                    handleCharacterChange(index, "isVisible", e.target.checked)
+                  }
+                />
+              </label>
               <button onClick={() => removeCharacter(index)}>削除</button>
             </div>
           ))}
