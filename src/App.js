@@ -627,6 +627,7 @@ function App() {
             <div key={index}>
               <h4>{index + 1}人目</h4>
               <input
+                className="form-control input-sm"
                 name="character"
                 value={character.character}
                 onChange={(e) =>
@@ -635,6 +636,7 @@ function App() {
                 placeholder="キャラクター"
               />
               <input
+                className="form-control input-sm"
                 name="faceDirection"
                 value={character.faceDirection}
                 onChange={(e) =>
@@ -643,6 +645,7 @@ function App() {
                 placeholder="顔の向き"
               />
               <input
+                className="form-control input-sm"
                 name="position"
                 value={character.position}
                 onChange={(e) =>
@@ -651,6 +654,7 @@ function App() {
                 placeholder="位置"
               />
               <input
+                className="form-control input-sm"
                 name="expression"
                 value={character.expression}
                 onChange={(e) =>
@@ -659,6 +663,7 @@ function App() {
                 placeholder="表情"
               />
               <input
+                className="form-control input-sm"
                 name="serif"
                 value={character.serif}
                 onChange={(e) =>
@@ -667,6 +672,7 @@ function App() {
                 placeholder="セリフ"
               />
               <input
+                className="form-control input-sm"
                 name="clothing"
                 value={character.clothing}
                 onChange={(e) =>
@@ -677,6 +683,7 @@ function App() {
               <label style={{display: "flex"}}>
                 画面内にいる
                 <input
+                  className="form-control input-sm"
                   name="isVisible"
                   type="checkbox" // チェックボックスを追加
                   checked={character.isVisible}
@@ -730,6 +737,7 @@ function App() {
               placeholder="シーン"
             />
             <input
+              className="form-control input-sm"
               name="location"
               value={imageData[selectedImage].sceneData.location}
               onChange={(e) =>
@@ -747,6 +755,7 @@ function App() {
               placeholder="場所"
             />
             <input
+              className="form-control input-sm"
               name="backgroundEffects"
               value={imageData[selectedImage].sceneData.backgroundEffects}
               onChange={(e) =>
@@ -778,6 +787,7 @@ function App() {
         </button>
         <br></br>
         <textarea
+          className="form-control input-sm"
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
         />
