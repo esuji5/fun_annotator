@@ -1,4 +1,46 @@
-# Getting Started with Create React App
+# Fun Annotator
+
+楽しく AI と 4 コマ漫画にアノテートするためのツール
+これがわいの AI-UX や！！
+
+## 概要
+
+このプロジェクトは、4 コマ漫画の画像を解析し、キャラクターやセリフの情報を取得するアノテーションツールです。ユーザーは画像を選択し、AI と対話しながらデータを入力し、CSV 形式で保存できます。
+
+## インストール手順
+
+### フロントエンド（React）
+
+1. リポジトリをクローンします。
+   ```bash
+   git clone <リポジトリのURL>
+   cd fun_annotator
+   ```
+2. 必要なパッケージをインストールします。
+   ```bash
+   npm install
+   ```
+
+### バックエンド（FastAPI）
+
+1. Python 環境をセットアップします。
+2. 必要なパッケージをインストールします。
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## 使用方法
+
+1. フロントエンドを起動します。
+   ```bash
+   npm start
+   ```
+2. バックエンドを起動します。
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+以下、 Create React App 後の残骸
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
