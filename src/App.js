@@ -5,6 +5,147 @@ import Papa from "papaparse";
 import "./App.css";
 
 function App() {
+  const [currentIndex, setCurrentIndex] = useState(112);
+  useEffect(() => {
+    // currentIndexが変更されたときにimageDataを初期化
+    setImageData({
+      image1: {
+        komaPath: imagePathList.image1,
+        characters: [
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+        ],
+        sceneData: {scene: "", location: "", backgroundEffects: ""},
+      },
+      image2: {
+        komaPath: imagePathList.image2,
+        characters: [
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+        ],
+        sceneData: {scene: "", location: "", backgroundEffects: ""},
+      },
+      image3: {
+        komaPath: imagePathList.image3,
+        characters: [
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+        ],
+        sceneData: {scene: "", location: "", backgroundEffects: ""},
+      },
+      image4: {
+        komaPath: imagePathList.image4,
+        characters: [
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+          {
+            character: "",
+            faceDirection: "",
+            position: "",
+            expression: "",
+            serif: "",
+            clothing: "",
+            isVisible: true,
+          },
+        ],
+        sceneData: {scene: "", location: "", backgroundEffects: ""},
+      },
+    });
+    setSummary(""); // summaryを空文字にリセット
+    setDiscussionResult(""); // discussionResultを
+    setChatHistory([]);
+  }, [currentIndex]); // currentIndexが変更され
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -354,6 +495,23 @@ function App() {
       console.error("Error uploading file:", error);
     }
   };
+
+  const handleCharacterSwap = (index1, index2) => {
+    setImageData((prevData) => {
+      const updatedCharacters = [...prevData[selectedImage].characters];
+      const temp = updatedCharacters[index1];
+      updatedCharacters[index1] = updatedCharacters[index2];
+      updatedCharacters[index2] = temp;
+      return {
+        ...prevData,
+        [selectedImage]: {
+          ...prevData[selectedImage],
+          characters: updatedCharacters,
+        },
+      };
+    });
+  };
+
   const fetchOverallFeedback = async () => {
     try {
       const dataName = imagePathList.image1.split("/")[1];
@@ -403,10 +561,13 @@ function App() {
     <div className="container">
       <header className="header">
         <span>{imagePathList[selectedImage]?.split("/").pop()}</span>
-        <button onClick={() => setSelectedImage("prev")}>前の画像</button>
-        <button onClick={() => setSelectedImage("next")}>次の画像</button>
-        <button onClick={saveToCSV}>保存</button>
+        {/* <button onClick={() => setSelectedImage("prev")}>前の画像</button> */}
+        {/* <button onClick={() => setSelectedImage("next")}>次の画像</button> */}
+        <button class="btn btn-outline" onClick={saveToCSV}>
+          保存
+        </button>
         <button
+          class="btn"
           onClick={() =>
             setCurrentIndex(
               (prevIndex) =>
@@ -416,9 +577,21 @@ function App() {
           disabled={currentIndex === 0}
         >
           前の4コマ({currentIndex - 1})
-        </button>{" "}
-        <button onClick={handleNext}>次の4コマ({currentIndex + 1})</button>
-        <button onClick={toggleBlur}>ブラーを切り替え</button>
+        </button>
+        <input
+          className="form-control input"
+          type="number"
+          value={currentIndex}
+          onChange={(e) => setCurrentIndex(Number(e.target.value))} // currentIndexを更新
+          min={0}
+          max={Math.floor(rows.length / 4) - 1} // 最大値を設定
+        />
+        <button class="btn is-small" onClick={handleNext}>
+          次の4コマ({currentIndex + 1})
+        </button>
+        <button class="btn" onClick={toggleBlur}>
+          ブラーを切り替え
+        </button>
       </header>
       <div className="main-content">
         <div className="image-selector">
@@ -435,7 +608,10 @@ function App() {
                 alt={`image${num}`}
                 className={isBlurred ? "blur" : ""}
               />
-              <button onClick={fetchData}>データ取得</button>
+              {/* <button onClick={fetchData}>データ取得</button> */}
+              <button class="btn btn-sm" onClick={handleSubmit}>
+                データ取得
+              </button>
               {/* {selectedImage === `image${num}` ? (
                 <img src={imagePathList[num - 1]} alt={`image${num}`} />
               ) : (
@@ -509,13 +685,34 @@ function App() {
                   }
                 />
               </label>
-              <button onClick={() => removeCharacter(index)}>削除</button>
+              {index > 0 && (
+                <button
+                  class="btn btn-sm"
+                  onClick={() => handleCharacterSwap(index, index - 1)}
+                >
+                  入れ替え
+                </button>
+              )}
+              {index < imageData[selectedImage].characters.length - 1 && (
+                <button
+                  class="btn btn-sm"
+                  onClick={() => handleCharacterSwap(index, index + 1)}
+                >
+                  入れ替え
+                </button>
+              )}
+              <button class="btn btn-sm" onClick={() => removeCharacter(index)}>
+                削除
+              </button>
             </div>
           ))}
-          <button onClick={addCharacter}>キャラクター追加</button>
+          <button class="btn btn-sm" onClick={addCharacter}>
+            キャラクター追加
+          </button>
           <div>
             <h4>状況</h4>
             <input
+              className="form-control input-sm"
               name="scene"
               value={imageData[selectedImage].sceneData.scene}
               onChange={(e) =>
@@ -568,6 +765,11 @@ function App() {
             />
           </div>
         </div>
+      </div>
+      <div>
+        {/* <input type="file" onChange={handleFileChange} /> */}
+        {/* <button onClick={handleSubmit}>Analyze Image</button> */}
+        {results && <div>{JSON.stringify(results)}</div>}
       </div>
       <div className="summary-section">
         <h3>4コマまとめ</h3>
